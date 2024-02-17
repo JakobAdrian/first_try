@@ -15,6 +15,47 @@ class MyApp extends StatelessWidget {
   }
 }
 
+abstract class Product {
+  String get title;
+  String get description;
+  double get price;
+}
+
+class MyProduct extends Product {
+  @override
+  final String title;
+  @override
+  final String description;
+  @override
+  final double price;
+
+  MyProduct(
+      {required this.title, required this.description, required this.price});
+}
+
+final List<Product> products = [
+  MyProduct(
+      title: "Sneakers",
+      description: "Schöne Sneakers mit einem modernen Fit",
+      price: 169.99),
+  MyProduct(
+      title: "T-Shirt",
+      description: "Ein T-Shirt aus 100% Baumwolle",
+      price: 29.99),
+  MyProduct(
+      title: "Hose",
+      description: "Eine gemütliche Hosen mit Elastan",
+      price: 59.99),
+  MyProduct(
+      title: "Hemd",
+      description: "Ein Hemd das wirklich gut passt",
+      price: 49.99),
+  MyProduct(
+      title: "Pullover",
+      description: "Ein Pullover aus 100% Baumwolle",
+      price: 79.99),
+];
+
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
   @override
@@ -25,93 +66,109 @@ class MyHomePage extends StatelessWidget {
         title: const Text("Produkte"),
         centerTitle: false,
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Schaue ein schönes Produkt an,',
-              style: TextStyle(
-                fontSize: 15,
-              ),
-            ),
-            Text(
-              'indem du auf den FAB drückst',
-              style: TextStyle(
-                fontSize: 15,
-              ),
-            ),
-          ],
+      body: Card(
+        child: ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: Text(products[index].title),
+              subtitle: Text(products[index].description),
+              trailing: Text("${products[index].price} \$"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SecondRoute(
+                      product: products[index],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
-      ),
-      
-      floatingActionButton: FloatingActionButton(
-        
-        child: const Icon(Icons.accessibility_new),
-        onPressed: () => {
-          
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const SecondRoute())),
-        },
       ),
     );
   }
 }
 
 class SecondRoute extends StatelessWidget {
-  const SecondRoute({super.key});
+  final Product product;
+
+  const SecondRoute({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
+    final int Index = products.indexOf(product);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Details zu Hemd"),
+        title: Text("Details zu ${products[Index].title}"),
         centerTitle: false,
       ),
-      body: const Padding(
-        padding: EdgeInsets.only(top: 30),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 20),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Hemd',
-                style: TextStyle(
-                  fontSize: 30,
-                ),
+              const SizedBox(
+                height: 15,
               ),
               Text(
-                'Ein Hemd das wirklich passt',
-                style: TextStyle(
-                  fontSize: 15,
+                products[Index].title,
+                style: const TextStyle(
+                  fontSize: 35,
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
               Text(
-                'Preis: 49.99 \$',
-                style: TextStyle(
-                  fontSize: 15,
+                products[Index].description,
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                "${products[Index].price} \$",
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    foregroundColor: MaterialStateProperty.all(Colors.purple),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        side: const BorderSide(
+                          color: Colors.black, width: 1.0),
+                      ),
+                    ),
+                  ),
+                  child: const Text("zutück zum Homescreen"),
+                  onPressed: () => Navigator.pop(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyHomePage(),
+                    ),
+                  ),
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-      floatingActionButton: ElevatedButton(
-        
-        style:
-            ButtonStyle (backgroundColor:  
-            MaterialStateProperty.all(Colors.red),
-        foregroundColor: MaterialStateProperty.all(Colors.white),
-        overlayColor: MaterialStateProperty.all(Colors.blue),
-        
-        ),
-        child: const Icon(Icons.home),
-        onPressed: () => Navigator.pop(
-          context,
-          MaterialPageRoute(
-            builder: (context)=> const MyHomePage(),
           ),
         ),
       ),
